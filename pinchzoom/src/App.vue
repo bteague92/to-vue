@@ -23,25 +23,15 @@
       </div>
       <div id="overlay" class="overlay">
         <button @click="closeOverlay">X</button>
-        <div class="overlayImages">
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-          <div class="placeholder"></div>
-        </div>
         <div class="mainOverlayImage">
-          <div class="zoom_buttons">
-            <div @click="zoom_out" class="minus">-</div>
-            <div @click="zoom_in" class="plus">+</div>
-          </div>
-          <img
-            @click="dragElement"
-            id="overlayImg"
-            draggable="true"
-            class="single"
-            v-scroll="handleScroll"
-            src="https://picsum.photos/id/238/300/300"
-          />
+          <v-zoomer
+            style="width: 500px; height: 500px; border: solid 1px silver;"
+          >
+            <img
+              style="object-fit: contain; width: 100%; height: 100%;"
+              src="https://picsum.photos/id/238/300/300"
+            />
+          </v-zoomer>
         </div>
       </div>
     </div>
@@ -49,15 +39,17 @@
 </template>
 
 <script>
+import Vue from "vue";
+import VueZoomer from "vue-zoomer";
+
+Vue.use(VueZoomer);
+
 export default {
   name: "App",
   data() {
     return {
       x: "",
       y: "",
-      single: true,
-      singleHalf: false,
-      double: false,
     };
   },
   methods: {
@@ -108,80 +100,28 @@ export default {
       let overlay = document.getElementById("overlay");
       overlay.style.display = "none";
     },
-    handleScrool: function() {
-      let overlayImg = document.getElementById("overlay_image");
-      overlayImg.style.transform = "translate(width: 400px)";
-    },
     zoom_in: function() {
       let overlayImg = document.getElementById("overlayImg");
-      if (this.single) {
-        this.single = false;
-        this.singleHalf = "true";
-        overlayImg.className = "singleHalf";
-      } else if (this.singleHalf) {
-        this.singleHalf = false;
-        this.double = "true";
-        overlayImg.className = "double";
+      if (this.zoom === 1) {
+        overlayImg.style.transform = "scale(1.5)";
+        this.zoom = 1.5;
+      } else if (this.zoom === 1.5) {
+        overlayImg.style.transform = "scale(2)";
+        this.zoom = 2;
       } else {
-        alert("max zoom acheived");
+        alert("max zoom reached");
       }
     },
     zoom_out: function() {
       let overlayImg = document.getElementById("overlayImg");
-      if (this.double) {
-        this.double = false;
-        this.singleHalf = "true";
-        overlayImg.className = "singleHalf";
-      } else if (this.singleHalf) {
-        this.singleHalf = false;
-        this.single = "true";
-        overlayImg.className = "single";
+      if (this.zoom === 2) {
+        overlayImg.style.transform = "scale(1.5)";
+        this.zoom = 1.5;
+      } else if (this.zoom === 1.5) {
+        overlayImg.style.transform = "scale(1)";
+        this.zoom = 1;
       } else {
-        alert("max zoomout acheived");
-      }
-    },
-    dragElement: function() {
-      let elmnt = document.getElementById("overlayImg");
-      var pos1 = 0,
-        pos2 = 0,
-        pos3 = 0,
-        pos4 = 0;
-      if (elmnt) {
-        // if present, the header is where you move the DIV from:
-        elmnt.onmousedown = dragMouseDown;
-      } else {
-        // otherwise, move the DIV from anywhere inside the DIV:
-        elmnt.onmousedown = dragMouseDown;
-      }
-
-      function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // get the mouse cursor position at startup:
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        // call a function whenever the cursor moves:
-        document.onmousemove = elementDrag;
-      }
-
-      function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-        // calculate the new cursor position:
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        // set the element's new position:
-        elmnt.style.top = elmnt.offsetTop - pos2 + "px";
-        elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
-      }
-
-      function closeDragElement() {
-        // stop moving when mouse button is released:
-        document.onmouseup = null;
-        document.onmousemove = null;
+        alert("min zoom reached");
       }
     },
   },
@@ -191,6 +131,7 @@ export default {
 <style>
 #App {
   width: 100%;
+  max-width: 100vw;
   display: flex;
   justify-content: center;
 }
@@ -235,13 +176,14 @@ export default {
 
 .overlay {
   position: fixed;
-  width: 80vw;
+  width: 80%;
   height: 80vh;
-  left: 10vw;
-  top: 10vh;
+  left: 10%;
+  top: 50px;
   background: white;
   border: 1px solid black;
-  display: flex;
+  display: none;
+  touch-action: pan-right pinch-zoom;
 }
 
 .overlayImages {
@@ -262,7 +204,7 @@ export default {
 }
 
 .mainOverlayImage {
-  width: 80%;
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
@@ -278,22 +220,6 @@ export default {
   cursor: move;
 }
 
-.singleHalf {
-  width: 750px;
-  height: 750px;
-  left: 0px;
-  top: 0px;
-  cursor: move;
-}
-
-.double {
-  width: 1000px;
-  height: 1000px;
-  left: 0px;
-  top: 0px;
-  cursor: move;
-}
-
 .overlay button {
   position: fixed;
   left: 0px;
@@ -304,6 +230,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 11000;
 }
 
 .coords {
