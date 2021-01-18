@@ -57,15 +57,13 @@ export default {
       this.x = e.clientX;
       this.y = e.clientY;
       let sideImg = document.getElementById("side_image");
-      sideImg.style.left = `-${e.clientX * 1.5}px`;
-      sideImg.style.top = `-${e.clientY * 1.5}px`;
-
       let hoverBox = document.getElementById("hoverBox");
-      hoverBox.style.left = `${e.clientX - 50}px`;
-      hoverBox.style.top = `${e.clientY - 50}px`;
-
+      let hoverSpec = hoverBox.getBoundingClientRect();
       let original = document.getElementById("original");
       let spec = original.getBoundingClientRect();
+
+      sideImg.style.left = `-${hoverSpec.left * 2}px`;
+      sideImg.style.top = `-${hoverSpec.top * 2}px`;
 
       if (
         this.x > spec.bottom ||
@@ -78,7 +76,34 @@ export default {
         this.show();
       }
 
-      console.log(spec);
+      if (this.x > spec.right - 50) {
+        hoverBox.style.top = `${e.clientY - 50}px`;
+        hoverBox.style.left = `${spec.right - 100}px`;
+
+        if (this.y > spec.bottom - 50) {
+          hoverBox.style.top = `${spec.bottom - 100}px`;
+        } else if (this.y < spec.top + 50) {
+          hoverBox.style.top = `${spec.top}px`;
+        }
+      } else if (this.x < spec.left + 50) {
+        hoverBox.style.top = `${e.clientY - 50}px`;
+        hoverBox.style.left = `${spec.left}px`;
+
+        if (this.y > spec.bottom - 50) {
+          hoverBox.style.top = `${spec.bottom - 100}px`;
+        } else if (this.y < spec.top + 50) {
+          hoverBox.style.top = `${spec.top}px`;
+        }
+      } else if (this.y > spec.bottom - 50) {
+        hoverBox.style.left = `${e.clientX - 50}px`;
+        hoverBox.style.top = `${spec.bottom - 100}px`;
+      } else if (this.y < spec.top + 50) {
+        hoverBox.style.left = `${e.clientX - 50}px`;
+        hoverBox.style.top = `${spec.top}px`;
+      } else {
+        hoverBox.style.left = `${e.clientX - 50}px`;
+        hoverBox.style.top = `${e.clientY - 50}px`;
+      }
     },
     show: function() {
       let box = document.getElementById("zoomer_side_view");
