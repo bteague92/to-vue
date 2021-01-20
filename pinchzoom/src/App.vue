@@ -37,13 +37,10 @@
     </div>
   </div>
 </template>
-
 <script>
 import Vue from "vue";
 import VueZoomer from "vue-zoomer";
-
 Vue.use(VueZoomer);
-
 export default {
   name: "App",
   data() {
@@ -61,25 +58,34 @@ export default {
       let hoverSpec = hoverBox.getBoundingClientRect();
       let original = document.getElementById("original");
       let spec = original.getBoundingClientRect();
+      let sideView = document.getElementById("zoomer_side_view");
+      let sideSpec = sideView.getBoundingClientRect();
+      let sideImgSpec = sideImg.getBoundingClientRect();
 
-      sideImg.style.left = `-${hoverSpec.left * 2}px`;
-      sideImg.style.top = `-${hoverSpec.top * 2}px`;
+      sideImg.style.left = `-${hoverSpec.left * 2 - spec.left * 2}px`;
+      sideImg.style.top = `-${hoverSpec.top * 2 - spec.top * 2}px`;
 
-      if (
-        this.x > spec.bottom ||
-        this.y > spec.right ||
-        this.x <= spec.top ||
-        this.y <= spec.left
-      ) {
-        this.hide();
-      } else {
-        this.show();
-      }
+      console.log("HoverSpec: ", hoverSpec);
+      console.log("Spec: ", spec);
+      console.log("Side Spec: ", sideSpec);
+      console.log("SideImgSpec: ", sideImgSpec);
+      console.log("X: ", this.x, "Y: ", this.y);
 
+      sideView.style.left = `-${spec.left + spec.width}px`;
+      sideView.style.top = `-${spec.top}px`;
+      // if (
+      //   this.x > spec.bottom ||
+      //   this.y > spec.right ||
+      //   this.x <= spec.top ||
+      //   this.y <= spec.left
+      // ) {
+      //   this.hide();
+      // } else {
+      //   this.show();
+      // }
       if (this.x > spec.right - 50) {
         hoverBox.style.top = `${e.clientY - 50}px`;
         hoverBox.style.left = `${spec.right - 100}px`;
-
         if (this.y > spec.bottom - 50) {
           hoverBox.style.top = `${spec.bottom - 100}px`;
         } else if (this.y < spec.top + 50) {
@@ -88,7 +94,6 @@ export default {
       } else if (this.x < spec.left + 50) {
         hoverBox.style.top = `${e.clientY - 50}px`;
         hoverBox.style.left = `${spec.left}px`;
-
         if (this.y > spec.bottom - 50) {
           hoverBox.style.top = `${spec.bottom - 100}px`;
         } else if (this.y < spec.top + 50) {
@@ -106,14 +111,14 @@ export default {
       }
     },
     show: function() {
-      let box = document.getElementById("zoomer_side_view");
-      box.style.display = "block";
+      // let box = document.getElementById("zoomer_side_view");
+      // box.style.display = "block";
       let hoverBox = document.getElementById("hoverBox");
       hoverBox.style.display = "block";
     },
     hide: function() {
-      let box = document.getElementById("zoomer_side_view");
-      box.style.display = "none";
+      // let box = document.getElementById("zoomer_side_view");
+      // box.style.display = "none";
       let hoverBox = document.getElementById("hoverBox");
       hoverBox.style.display = "none";
     },
@@ -152,15 +157,19 @@ export default {
   },
 };
 </script>
-
 <style>
-#App {
-  width: 100%;
-  max-width: 100vw;
-  display: flex;
-  justify-content: center;
+#app {
+  padding: 6%;
 }
-
+.spacer {
+  width: 300px;
+  height: 300px;
+  border: 1px dashed black;
+}
+.block {
+  display: block;
+  width: 100%;
+}
 .zoom_buttons {
   width: 100%;
   position: fixed;
@@ -173,24 +182,6 @@ export default {
   display: flex;
   justify-content: space-around;
 }
-
-.minus {
-  width: 50%;
-  border-right: 1px solid black;
-}
-
-.plus {
-  width: 50%;
-}
-
-.minus:hover {
-  cursor: pointer;
-}
-
-.plus:hover {
-  cursor: pointer;
-}
-
 #hoverBox {
   width: 100px;
   height: 100px;
@@ -198,7 +189,6 @@ export default {
   display: none;
   position: fixed;
 }
-
 .overlay {
   position: fixed;
   width: 80%;
@@ -210,7 +200,6 @@ export default {
   display: none;
   touch-action: pan-right pinch-zoom;
 }
-
 .overlayImages {
   width: 20%;
   height: 100%;
@@ -219,7 +208,6 @@ export default {
   flex-direction: column;
   align-items: center;
 }
-
 .placeholder {
   margin: 20px 0;
   width: 80px;
@@ -227,7 +215,6 @@ export default {
   background: white;
   border: 1px solid black;
 }
-
 .mainOverlayImage {
   width: 100%;
   height: 100%;
@@ -236,7 +223,6 @@ export default {
   justify-content: center;
   overflow: auto;
 }
-
 .single {
   width: 500px;
   height: 500px;
@@ -244,7 +230,6 @@ export default {
   top: 0px;
   cursor: move;
 }
-
 .overlay button {
   position: fixed;
   left: 0px;
@@ -257,32 +242,28 @@ export default {
   align-items: center;
   z-index: 11000;
 }
-
 .coords {
   display: flex;
-  width: 600px;
+  width: 100%;
   overflow: hidden;
   height: 400px;
 }
-
 .zoomer_side_view {
   width: 200px;
   height: 200px;
   overflow: hidden;
-  display: none;
+  display: block;
+  border: 1px solid black;
 }
-
 .zoomer_side_view #side_image {
   width: 800px;
   height: 800px;
   position: relative;
 }
-
 #original {
   width: 400px;
   height: 400px;
 }
-
 body,
 html {
   padding: 0;
